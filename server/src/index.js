@@ -1,21 +1,29 @@
 const express = require('express')
 const http = require('http')
 const cors = require('cors')
+const GraphQLModule = require('@graphql-modules/core').GraphQLModule
 
-const { VoyagerServer } = require('@aerogear/voyager-server')
-const { KeycloakSecurityService } = require('@aerogear/voyager-keycloak')
+
 const metrics = require('@aerogear/voyager-metrics')
 const auditLogger = require('@aerogear/voyager-audit')
+const { VoyagerServer } = require('@aerogear/voyager-server')
+
+const { TaskModule, TaskSubscriptionsModule } = require('./tasks/index')
+const connect = require("./db")
+
+const appModule = new GraphQLModule({
+  imports: [
+    TaskModule,
+    TaskSubscriptionsModule
+    // FileModule
+  ],
+});
 
 const config = require('./config/config')
-const connect = require('./db')
-const { typeDefs, resolvers } = require('./schema')
 
 let keycloakService = null
-
 // if a keycloak config is present we create
-// a keycloak service which will be passed into
-// ApolloVoyagerServer
+// a keycloak service which will be passed into ApolloVoyagerServer
 if (config.keycloakConfig) {
   keycloakService = new KeycloakSecurityService(config.keycloakConfig)
 }
@@ -35,20 +43,17 @@ async function start() {
   app.get('/health', (req, res) => res.sendStatus(200))
 
   // connect to db
-  const dataSource = {
-    client: await connect(config.db),
-    type: 'knex'
-  }
+  const client = await connect(config.db);
 
+  const schema = appModule.schema;
   const apolloConfig = {
-    typeDefs,
-    resolvers,
+    schema,
     playground: config.playgroundConfig,
     context: async ({ req }) => {
       // pass request + db ref into context for each resolver
       return {
         req: req,
-        db: dataSource.client,
+        db: client,
       }
     }
   }
