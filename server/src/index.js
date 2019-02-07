@@ -1,23 +1,13 @@
 const express = require('express')
 const http = require('http')
 const cors = require('cors')
-const GraphQLModule = require('@graphql-modules/core').GraphQLModule
-
 
 const metrics = require('@aerogear/voyager-metrics')
 const auditLogger = require('@aerogear/voyager-audit')
 const { VoyagerServer } = require('@aerogear/voyager-server')
 
-const { TaskModule, TaskSubscriptionsModule } = require('./tasks/index')
+const { appTypeDefs, appResolvers } = require('./schema')
 const connect = require("./db")
-
-const appModule = new GraphQLModule({
-  imports: [
-    TaskModule,
-    TaskSubscriptionsModule
-    // FileModule
-  ],
-});
 
 const config = require('./config/config')
 
@@ -40,14 +30,17 @@ async function start() {
     keycloakService.applyAuthMiddleware(app)
   }
 
+  const { applyFileMiddelware } = require('./files');
+  applyFileMiddelware(app);
+  
   app.get('/health', (req, res) => res.sendStatus(200))
 
   // connect to db
   const client = await connect(config.db);
 
-  const schema = appModule.schema;
   const apolloConfig = {
-    schema,
+    typeDefs: appTypeDefs,
+    resolvers: appResolvers,
     playground: config.playgroundConfig,
     context: async ({ req }) => {
       // pass request + db ref into context for each resolver

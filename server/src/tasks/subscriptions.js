@@ -4,23 +4,24 @@ const { pubSub } = require('../subscriptions')
 const TASKS_SUBSCRIPTION_KEY = 'tasks'
 
 
-const typeDefs = gql`
-    type Subscription {
-      tasks: TaskSubscription!
-    }
+const subscriptionTypeDefs = gql`
+type Subscription {
+  tasks: TaskSubscription!
+}
 
-    type TaskSubscription {
-      action: actionType!
-      task: Task!
-    }
-    enum actionType {
-      CREATED
-      MUTATED
-      DELETED
-    }
+type TaskSubscription {
+  action: actionType!
+  task: Task!
+}
+
+enum actionType {
+  CREATED
+  MUTATED
+  DELETED
+}
 `
 
-const resolvers = {
+const subscriptionResolvers = {
   Subscription: {
     tasks: {
       subscribe: () => pubSub.asyncIterator(TASKS_SUBSCRIPTION_KEY)
@@ -28,10 +29,8 @@ const resolvers = {
   },
 }
 
-
-
 module.exports = {
-  typeDefs,
-  resolvers,
+  subscriptionTypeDefs,
+  subscriptionResolvers,
   TASKS_SUBSCRIPTION_KEY
 }

@@ -1,5 +1,5 @@
-const { gql } = require('apollo-server')
 const { pubSub } = require('../subscriptions')
+const { gql } = require('apollo-server')
 const { conflictHandler } = require("@aerogear/voyager-conflicts")
 const { TASKS_SUBSCRIPTION_KEY } = require("./subscriptions")
 
@@ -23,7 +23,7 @@ type Mutation {
 }
 `
 
-const resolvers = {
+const taskResolvers = {
   Query: {
     allTasks: async (obj, args, context) => {
       const result = context.db.select().from('tasks')
@@ -101,6 +101,6 @@ function publish(actionType, data) {
 }
 
 module.exports = {
-  typeDefs,
-  resolvers
+  taskResolvers: taskResolvers,
+  taskTypeDefs: typeDefs
 }

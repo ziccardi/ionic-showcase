@@ -1,19 +1,8 @@
-const GraphQLModule  = require('@graphql-modules/core').GraphQLModule
 
-const { typeDefs, resolvers } = require('./schema')
-const { subTypeDefs, subResolvers } = require('./subscriptions')
-
-const TaskModule = new GraphQLModule({
-    typeDefs,
-    resolvers,
-});
-
-const TaskSubscriptionsModule = new GraphQLModule({
-    subTypeDefs,
-    subResolvers,
-});
+const { taskTypeDefs, taskResolvers } = require('./schema')
+const { subscriptionTypeDefs, subscriptionResolvers } = require('./subscriptions')
 
 module.exports = {
-    TaskModule,
-    TaskSubscriptionsModule
+    taskTypeDefs, taskResolvers,
+    subscriptionTypeDefs, subscriptionResolvers
 }
