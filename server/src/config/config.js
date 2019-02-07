@@ -13,20 +13,26 @@ class Config {
     }
 
     this.keycloakConfigPath = process.env.KEYCLOAK_CONFIG || path.resolve(__dirname, './keycloak.json')
-    this.keycloakConfig = readKeycloakConfig(this.keycloakConfigPath)
-    
+    this.keycloakConfig = {
+      "realm": "voyager-testing",
+      "auth-server-url": "https://keycloak-09271b-collab-project.comm2.skunkhenry.com/auth",
+      "ssl-required": "none",
+      "resource": "voyager-testing",
+      "public-client": true,
+      "use-resource-role-mappings": true,
+      "confidential-port": 0
+    }
+
     this.playgroundConfig = {
       settings: {
         'editor.theme': 'light',
         'editor.cursorShape': 'block'
       },
-      tabs: [
-        {
-          endpoint: `/graphql`,
-          variables: {},
-          query: fs.readFileSync(path.resolve(__dirname, './playground.gql'), 'utf8')
-        }
-      ]
+      tabs: [{
+        endpoint: `/graphql`,
+        variables: {},
+        query: fs.readFileSync(path.resolve(__dirname, './playground.gql'), 'utf8')
+      }]
     }
   }
 }
