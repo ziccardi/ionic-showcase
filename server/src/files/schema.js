@@ -1,6 +1,7 @@
 const mkdirp = require('mkdirp')
 const shortid = require('shortid')
 const express = require('express')
+const config = require('../config/config')
 
 const fileTypeDefs = `
  type File {
@@ -43,8 +44,13 @@ const storeFS = ({ stream, filename }) => {
 const fileResolvers = {
   Query: {
     uploads: async (obj, args, context) => {
-      console.log("Fetching files")
-      return context.db.select().from(PREFIX)
+      return context.db.select().from(PREFIX).then((files) => {
+        console.log("Fetching files", files)
+        files.forEach((file) => {
+          file.url = `${config.appUrl}${file.url}`
+        })
+        return files;
+      })
     }
   },
   Mutation: {
