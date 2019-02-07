@@ -70,7 +70,6 @@ export class VoyagerService {
     }
     if (this.auth.authService) {
       options.headerProvider = this.auth.getAuth().getHeaderProvider();
-      // options.tokenProvider = this.auth.getAuth().getRawToken();
     }
     this._apolloClient = await createClient(options);
   }
