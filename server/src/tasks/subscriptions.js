@@ -4,7 +4,7 @@ const { pubSub } = require('../subscriptions')
 const TASKS_SUBSCRIPTION_KEY = 'tasks'
 
 
-const subscriptionTypeDefs = gql`
+const subscriptionTypeDefs = `
 type Subscription {
   tasks: TaskSubscription!
 }

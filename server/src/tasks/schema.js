@@ -3,7 +3,7 @@ const { gql } = require('apollo-server')
 const { conflictHandler } = require("@aerogear/voyager-conflicts")
 const { TASKS_SUBSCRIPTION_KEY } = require("./subscriptions")
 
-const typeDefs = gql`
+const typeDefs = `
 type Task {
   id: ID!
   version: Int

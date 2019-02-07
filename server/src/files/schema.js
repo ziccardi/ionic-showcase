@@ -1,12 +1,13 @@
-const { gql } = require('apollo-server')
 const mkdirp = require('mkdirp')
 const shortid = require('shortid')
+const express = require('express')
 
-const fileTypeDefs = gql`
+const fileTypeDefs = `
  type File {
     filename: String!
     mimetype: String!
     encoding: String!
+    url: String!
   }
   type Query {
     uploads: [File]
@@ -16,7 +17,8 @@ const fileTypeDefs = gql`
   }
 `
 
-const UPLOAD_DIR = './files'
+const PREFIX = 'files'
+const UPLOAD_DIR = `./${PREFIX}`
 // Ensure upload directory exists.
 mkdirp.sync(UPLOAD_DIR)
 
@@ -38,27 +40,19 @@ const storeFS = ({ stream, filename }) => {
   )
 }
 
-
-
 const fileResolvers = {
   Query: {
-    files: async (obj, args, context) => {
-      const result = context.db.select().from('files')
-      if (args.first && args.after) {
-        result.limit(args.first)
-        result.offset(args.after)
-      } else if (args.first) {
-        result.limit(args.first)
-      }
-      return result
+    uploads: async (obj, args, context) => {
+      console.log("Fetching files")
+      return context.db.select().from(PREFIX)
     }
   },
   Mutation: {
     async singleUpload(parent, { file }) {
       const { stream, filename, mimetype, encoding } = await file;
       const filename = await storeFS(stream, fileName)
-      const url = `http://localhost:4000/files/${filename}`
-      const result = await context.db('files').insert({
+      const url = `/${PREFIX}/${filename}`
+      const result = await context.db(PREFIX).insert({
         filename, mimetype, encoding, url
       }).returning('*').then((rows) => rows[0])
       return result
@@ -66,7 +60,14 @@ const fileResolvers = {
   }
 }
 
+const applyFileMiddelware = (app) => {
+  app.use('/files', express.static('files'))
+}
+
+
 module.exports = {
+  applyFileMiddelware,
   fileTypeDefs,
-  fileResolvers
+  fileResolvers,
+  PREFIX
 }
