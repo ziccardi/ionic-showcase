@@ -1,9 +1,8 @@
 {
   "realm": "voyager-testing",
+  "bearer-only": true,
   "auth-server-url": "https://keycloak-09271b-collab-project.comm2.skunkhenry.com/auth",
   "ssl-required": "none",
-  "resource": "voyager-testing",
-  "public-client": true,
-  "use-resource-role-mappings": true,
+  "resource": "scoady-test",
   "confidential-port": 0
 }

@@ -99,16 +99,24 @@ async function start() {
       execute,
       subscribe,
       onConnect: connectionParams => {
-        console.log("CONNECTION PARAMS: ", connectionParams)
-        if (connectionParams.token) {
-          return new Promise((resolve, reject) => {
-            keycloakService.keycloak.grantManager.validateAccessToken(connectionParams, (result) => {
-              console.log("result: ", result)
-              resolve(result)
-            })
+        return new Promise((resolve, reject) => {
+          console.log(connectionParams.token)
+          const newToken = keycloakService.keycloak.Token(connectionParams.token);
+          console.log("BUILT TOKEN: ", newToken)
+          keycloakService.keycloak.grantManager.validateAccessToken(connectionParams.token, (err, result) => {
+            if(err){
+              return reject(err);
+            }
+            if(result === connectionParams.token) {
+              resolve(true)
+            }
           })
-        }
-        return new Error("No valid Auth Token")
+        })
+      },
+      onOperation: (message, params) => {
+        // console.log("MESSAGE: ", message)
+        // console.log("PARAMS: ", params)
+        console.log("ON OPERATION CALLED WITH: ", message, params)
       },
       schema: apolloServer.schema
     }, {

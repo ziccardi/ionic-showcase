@@ -17,9 +17,10 @@ class Config {
       "realm": "voyager-testing",
       "auth-server-url": "https://keycloak-09271b-collab-project.comm2.skunkhenry.com/auth",
       "ssl-required": "none",
-      "resource": "voyager-testing",
-      "public-client": true,
-      "use-resource-role-mappings": true,
+      "resource": "scoady-test",
+      "credentials": {
+        "secret": "ae60ac07-f62a-4748-a9f6-ebec5670e1cd"
+      },
       "confidential-port": 0
     }
 
