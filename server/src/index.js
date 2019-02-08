@@ -98,25 +98,8 @@ async function start() {
     new SubscriptionServer({
       execute,
       subscribe,
-      onConnect: connectionParams => {
-        return new Promise((resolve, reject) => {
-          console.log(connectionParams.token)
-          const newToken = keycloakService.keycloak.Token(connectionParams.token);
-          console.log("BUILT TOKEN: ", newToken)
-          keycloakService.keycloak.grantManager.validateAccessToken(connectionParams.token, (err, result) => {
-            if(err){
-              return reject(err);
-            }
-            if(result === connectionParams.token) {
-              resolve(true)
-            }
-          })
-        })
-      },
-      onOperation: (message, params) => {
-        // console.log("MESSAGE: ", message)
-        // console.log("PARAMS: ", params)
-        console.log("ON OPERATION CALLED WITH: ", message, params)
+      onConnect: async connectionParams => {
+        return await keycloakService.validateToken(connectionParams.token)
       },
       schema: apolloServer.schema
     }, {
